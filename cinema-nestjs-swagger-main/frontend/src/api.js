@@ -19,6 +19,27 @@ export async function loginAdmin(email, senha) {
   return response.json()
 }
 
+export async function fetchMe(token) {
+  const response = await fetch(`${BASE_URL}/auth/me`, { headers: authHeaders(token) })
+  if (!response.ok) throw new Error('Sessão inválida')
+  return response.json()
+}
+
+export async function redefinirSenha(token, novaSenha) {
+  const response = await fetch(`${BASE_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, novaSenha }),
+  })
+  const data = await response.json()
+  if (!response.ok) {
+    // Erros de validação do Nest vêm como lista de mensagens
+    const msg = Array.isArray(data.message) ? data.message.join('. ') : data.message
+    throw new Error(msg || 'Não foi possível redefinir a senha')
+  }
+  return data
+}
+
 // ==================== FILMES ====================
 export async function fetchFilmes() {
   try {

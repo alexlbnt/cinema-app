@@ -12,6 +12,7 @@ import { PedidoModule } from './pedido/pedido.module';
 import { SnackModule } from './snack/snack.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { AdminGuard } from './auth/admin.guard';
 
 // Pasta com o build do frontend web (gerado por `npm run build` em frontend/).
 // Em desenvolvimento este arquivo roda de src/; compilado, roda de dist/src/.
@@ -38,11 +39,16 @@ const frontendPath =
     AuthModule,
   ],
   providers: [
-    // Guard global — protege TODAS as rotas automaticamente
-    // Rotas públicas usam @Public() para abrir exceção
+    // Guards globais, executados nesta ordem:
+    // 1. JwtAuthGuard — exige JWT em todas as rotas, exceto as @Public()
+    // 2. AdminGuard — nas rotas @AdminOnly(), exige papel ADMIN
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AdminGuard,
     },
   ],
 })

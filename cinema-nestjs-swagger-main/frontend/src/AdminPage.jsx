@@ -6,7 +6,7 @@ import {
   fetchSalas, criarSala, editarSala, excluirSala,
   fetchSessoes, criarSessao, editarSessao, excluirSessao,
   fetchSnacks, criarSnack, editarSnack, excluirSnack,
-  loginAdmin,
+  loginAdmin, fetchMe,
 } from './api'
 
 function LoginScreen({ onLogin }) {
@@ -21,6 +21,10 @@ function LoginScreen({ onLogin }) {
     setLoading(true)
     try {
       const data = await loginAdmin(email, senha)
+      if (data.user?.papel !== 'ADMIN') {
+        setError('Acesso restrito a administradores.')
+        return
+      }
       onLogin(data.access_token, data.user)
     } catch (err) {
       setError(err.message || 'Email ou senha incorretos')
@@ -107,7 +111,13 @@ function AdminPage() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { if (token) loadData() }, [token])
+  // Confere a sessão salva: se o token expirou ou o usuário não é mais admin, sai.
+  useEffect(() => {
+    if (!token) return
+    fetchMe(token)
+      .then(me => { if (me.papel === 'ADMIN') loadData(); else handleLogout() })
+      .catch(() => handleLogout())
+  }, [token])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target

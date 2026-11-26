@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SalaService } from './sala.service';
 import { CreateSalaDto } from './dto/create-sala.dto';
 import { UpdateSalaDto } from './dto/update-sala.dto';
 import { Public } from '../auth/public.decorator';
+import { AdminOnly } from '../auth/admin.decorator';
 
 @ApiTags('Salas')
 @Controller('sala')
@@ -11,7 +20,7 @@ export class SalaController {
   constructor(private readonly salaService: SalaService) {}
 
   @Post()
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Cadastra uma nova Sala de cinema' })
   create(@Body() createSalaDto: CreateSalaDto) {
     return this.salaService.create(createSalaDto);
@@ -32,14 +41,14 @@ export class SalaController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Atualiza uma sala existente' })
   update(@Param('id') id: string, @Body() updateSalaDto: UpdateSalaDto) {
     return this.salaService.update(+id, updateSalaDto);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Remove uma sala pelo ID' })
   remove(@Param('id') id: string) {
     return this.salaService.remove(+id);

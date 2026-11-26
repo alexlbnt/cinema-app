@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FilmeService } from './filme.service';
 import { CreateFilmeDto } from './dto/create-filme.dto';
 import { UpdateFilmeDto } from './dto/update-filme.dto';
 import { Public } from '../auth/public.decorator';
+import { AdminOnly } from '../auth/admin.decorator';
 
 @ApiTags('Filmes')
 @Controller('filme')
@@ -11,7 +20,7 @@ export class FilmeController {
   constructor(private readonly filmeService: FilmeService) {}
 
   @Post()
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Cadastra um novo filme' })
   create(@Body() createFilmeDto: CreateFilmeDto) {
     return this.filmeService.create(createFilmeDto);
@@ -32,14 +41,14 @@ export class FilmeController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Atualiza um filme existente' })
   update(@Param('id') id: string, @Body() updateFilmeDto: UpdateFilmeDto) {
     return this.filmeService.update(+id, updateFilmeDto);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Remove um filme pelo ID' })
   remove(@Param('id') id: string) {
     return this.filmeService.remove(+id);

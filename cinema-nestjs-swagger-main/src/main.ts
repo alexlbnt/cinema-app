@@ -1,20 +1,14 @@
+import './load-env'; // precisa ser o primeiro import
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { configurarApp } from './configurar-app';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS para o app mobile conseguir conectar
-  app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
-
-  // Validação global de DTOs
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  // CORS e validação global (compartilhado com os testes e2e)
+  configurarApp(app);
 
   // Swagger
   const config = new DocumentBuilder()

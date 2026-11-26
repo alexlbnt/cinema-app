@@ -11,7 +11,6 @@ import Toast from 'react-native-toast-message';
 import { ingressosApi, pedidosApi } from '../../src/api';
 import { useCheckoutStore } from '../../src/store/checkoutStore';
 import { useTicketsStore } from '../../src/store/ticketsStore';
-import { useAuthStore } from '../../src/store/authStore';
 import { Colors, Spacing, FontSize, Radius } from '../../src/utils/theme';
 import { formatCurrency, formatDateTime } from '../../src/utils/format';
 
@@ -27,7 +26,6 @@ export default function PagamentoScreen() {
   const router = useRouter();
   const { seats, snacks, sessaoInfo, getTotalValue, reset } = useCheckoutStore();
   const { addTicket } = useTicketsStore();
-  const { user } = useAuthStore();
   const [payMethod, setPayMethod] = useState('pix');
   const [loading, setLoading] = useState(false);
 
@@ -41,24 +39,21 @@ export default function PagamentoScreen() {
     }
     setLoading(true);
     try {
-      // 1. Criar ingressos
+      // 1. Criar ingressos (o servidor calcula o preço e vincula à conta pelo token)
       const ingressoIds: number[] = [];
       for (const seat of seats) {
         const { data } = await ingressosApi.create({
           sessaoId: Number(sessaoId),
           tipo: seat.tipo,
-          valorPago: seat.tipo === 'Meia' ? valorIngresso / 2 : valorIngresso,
           assento: seat.assento,
-          usuarioId: user?.id,
         });
         ingressoIds.push(data.id);
       }
 
-      // 2. Criar pedido
+      // 2. Criar pedido (o servidor calcula o valor total)
       const { data: pedido } = await pedidosApi.create({
         ingressoIds,
         snackIds: snacks.map((s) => s.id),
-        valorTotal: total,
       });
 
       // 3. Salvar ticket local
@@ -70,7 +65,7 @@ export default function PagamentoScreen() {
         assentos: seats.map((s) => s.assento),
         tipo: seats[0]?.tipo || 'Inteira',
         snacks: snacks,
-        valorTotal: total,
+        valorTotal: pedido.valorTotal ?? total,
         qrCode: `CINEMA-${pedido.id}-${Date.now()}`,
       });
 

@@ -1,50 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { escopoDoUsuario, UsuarioAutenticado } from '../auth/papel';
+import { CreateIngressoDto } from './dto/create-ingresso.dto';
+import { precoIngresso } from './preco';
+
+const INCLUDE = {
+  sessao: { include: { filme: true, sala: true } },
+  pedido: true,
+} as const;
 
 @Injectable()
 export class IngressoService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: {
-    sessaoId: number;
-    tipo: string;
-    valorPago: number;
-    assento: string;
-    usuarioId?: number;
-  }) {
+  /** Cria um ingresso com o preço da sessão. Sem usuário = compra de visitante. */
+  async create(data: CreateIngressoDto, usuarioId?: number) {
+    const sessao = await this.prisma.sessao.findUnique({
+      where: { id: data.sessaoId },
+    });
+    if (!sessao) throw new NotFoundException('Sessão não encontrada');
+
     return this.prisma.ingresso.create({
       data: {
-        sessaoId: data.sessaoId,
+        sessaoId: sessao.id,
         tipo: data.tipo,
-        valorPago: data.valorPago,
+        valorPago: precoIngresso(sessao.valorIngresso, data.tipo),
         assento: data.assento,
-        usuarioId: data.usuarioId,
+        usuarioId: usuarioId ?? null,
       },
-      include: {
-        sessao: { include: { filme: true, sala: true } },
-      },
+      include: { sessao: { include: { filme: true, sala: true } } },
     });
   }
 
-  // Retorna todos os ingressos (admin) ou só do usuário
-  async findAll(usuarioId?: number) {
+  /** Admin: todos os ingressos. Demais: só os do próprio usuário. */
+  findAll(user: UsuarioAutenticado) {
     return this.prisma.ingresso.findMany({
-      where: usuarioId ? { usuarioId } : undefined,
-      include: {
-        sessao: { include: { filme: true, sala: true } },
-        pedido: true,
-      },
+      where: escopoDoUsuario(user),
+      include: INCLUDE,
     });
   }
 
-  async findOne(id: number) {
-    const ingresso = await this.prisma.ingresso.findUnique({
-      where: { id },
-      include: {
-        sessao: { include: { filme: true, sala: true } },
-        pedido: true,
-      },
+  async findOne(id: number, user: UsuarioAutenticado) {
+    const ingresso = await this.prisma.ingresso.findFirst({
+      where: { id, ...escopoDoUsuario(user) },
+      include: INCLUDE,
     });
+    // Ingresso de outro usuário responde 404, sem revelar que existe.
     if (!ingresso) throw new NotFoundException('Ingresso não encontrado');
     return ingresso;
   }

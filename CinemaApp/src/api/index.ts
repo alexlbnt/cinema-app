@@ -71,12 +71,11 @@ export const sessoesApi = {
 // ============ INGRESSOS ============
 export const ingressosApi = {
   getAll: () => api.get('/ingresso'),
+  // Preço e dono do ingresso são definidos pelo servidor (sessão + token).
   create: (data: {
     sessaoId: number;
     tipo: 'Inteira' | 'Meia';
-    valorPago: number;
     assento: string;
-    usuarioId?: number;
   }) => api.post('/ingresso', data),
 };
 
@@ -87,10 +86,10 @@ export const snacksApi = {
 
 // ============ PEDIDOS ============
 export const pedidosApi = {
+  // O valor total é calculado pelo servidor.
   create: (data: {
     ingressoIds: number[];
     snackIds: number[];
-    valorTotal: number;
   }) => api.post('/pedido', data),
 
   getAll: () => api.get('/pedido'),

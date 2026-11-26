@@ -50,6 +50,8 @@ Escaneie o QR Code com o app **Expo Go** (versão atual da loja; o projeto usa o
 - **E-mail:** admin@cinema.com
 - **Senha:** senha123
 
+Essa conta é **administradora** e acessa o painel em `http://localhost:3000/admin`. Contas criadas pelo cadastro do app são de **cliente** e não entram no painel.
+
 ## 🛠️ Stack
 
 - **Backend:** NestJS, Prisma, SQLite, JWT, Swagger

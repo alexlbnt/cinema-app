@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SnackService } from './snack.service';
 import { CreateSnackDto } from './dto/create-snack.dto';
 import { UpdateSnackDto } from './dto/update-snack.dto';
 import { Public } from '../auth/public.decorator';
+import { AdminOnly } from '../auth/admin.decorator';
 
 @ApiTags('Snacks')
 @Controller('snack')
@@ -11,7 +20,7 @@ export class SnackController {
   constructor(private readonly snackService: SnackService) {}
 
   @Post()
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Cadastra um novo Snack' })
   create(@Body() createSnackDto: CreateSnackDto) {
     return this.snackService.create(createSnackDto);
@@ -32,14 +41,14 @@ export class SnackController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Atualiza um snack existente' })
   update(@Param('id') id: string, @Body() updateSnackDto: UpdateSnackDto) {
     return this.snackService.update(+id, updateSnackDto);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Remove um snack pelo ID' })
   remove(@Param('id') id: string) {
     return this.snackService.remove(+id);

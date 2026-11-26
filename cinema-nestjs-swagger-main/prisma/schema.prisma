@@ -72,6 +72,7 @@ model Usuario {
   email     String     @unique
   senha     String
   criadoEm DateTime   @default(now())
+  papel     String     @default("CLIENTE") // "ADMIN" ou "CLIENTE"
   ingressos Ingresso[]
   pedidos   Pedido[]   // ← adiciona isso
 }

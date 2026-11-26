@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SessaoService } from './sessao.service';
 import { CreateSessaoDto } from './dto/create-sessao.dto';
 import { UpdateSessaoDto } from './dto/update-sessao.dto';
 import { Public } from '../auth/public.decorator';
+import { AdminOnly } from '../auth/admin.decorator';
 
 @ApiTags('Sessões')
 @Controller('sessao')
@@ -11,7 +20,7 @@ export class SessaoController {
   constructor(private readonly sessaoService: SessaoService) {}
 
   @Post()
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Cadastra uma nova Sessão' })
   create(@Body() createSessaoDto: CreateSessaoDto) {
     return this.sessaoService.create(createSessaoDto);
@@ -32,14 +41,14 @@ export class SessaoController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Atualiza uma sessão existente' })
   update(@Param('id') id: string, @Body() updateSessaoDto: UpdateSessaoDto) {
     return this.sessaoService.update(+id, updateSessaoDto);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
+  @AdminOnly()
   @ApiOperation({ summary: 'Remove uma sessão pelo ID' })
   remove(@Param('id') id: string) {
     return this.sessaoService.remove(+id);
