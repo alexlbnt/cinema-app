@@ -2,6 +2,8 @@
 
 Sistema de cinema com backend NestJS, frontend web React e app mobile React Native (Expo), compartilhando o mesmo banco de dados.
 
+> **Créditos:** este projeto é uma continuação do repositório original [luizfelipelobo21/cinema-app](https://github.com/luizfelipelobo21/cinema-app), desenvolvido por [@luizfelipelobo21](https://github.com/luizfelipelobo21). A base do backend, do frontend web e do app mobile vem desse trabalho; as implementações seguintes foram feitas a partir dele.
+
 ## 📁 Estrutura
 
 ```
@@ -16,6 +18,7 @@ app-cinema/
 ### Backend
 ```bash
 cd cinema-nestjs-swagger-main
+cp .env.example .env          # configura DATABASE_URL e JWT_SECRET
 npm install
 npx prisma migrate dev
 npx prisma generate
