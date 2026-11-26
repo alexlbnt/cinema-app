@@ -2,6 +2,14 @@
 
 Aplicativo mobile completo para compra de ingressos de cinema, construído com **React Native / Expo** consumindo o backend **NestJS + Swagger** existente.
 
+| | Versão |
+|---|---|
+| Expo SDK | **58** |
+| React Native | 0.88 (New Architecture) |
+| React | 19.3 |
+| Expo Router | 58 |
+| TypeScript | 6.0 |
+
 ---
 
 ## 📱 Funcionalidades
@@ -43,7 +51,7 @@ CinemaApp/
 │       └── comprovante.tsx     # 5. Comprovante / QR Code
 │
 ├── src/
-│   ├── api/index.ts            # Axios + interceptors JWT
+│   ├── api/index.ts            # Axios + interceptors JWT + detecção do IP do backend
 │   ├── store/
 │   │   ├── authStore.ts        # Zustand + SecureStore (JWT)
 │   │   ├── checkoutStore.ts    # Estado do carrinho
@@ -52,11 +60,10 @@ CinemaApp/
 │       ├── theme.ts            # Design tokens (cores, espaçamentos)
 │       └── format.ts           # Formatadores de data/moeda
 │
-└── backend-additions/          # Arquivos para adicionar ao NestJS
-    ├── src/auth/               # Módulo de autenticação JWT
-    ├── src/ingresso/           # DTO atualizado (+ campo assento)
-    └── src/pedido/             # Service e DTO atualizados
+└── backend-additions/          # Referência histórica (já integrado ao backend)
 ```
+
+> `backend-additions/` guarda a primeira versão do código de autenticação e dos DTOs que foram levados para o NestJS. O backend em `cinema-nestjs-swagger-main/` já contém uma versão mais completa desse código, então **não é preciso copiar nada**. A pasta fica fora da checagem de TypeScript do app (`exclude` no `tsconfig.json`).
 
 ---
 
@@ -69,118 +76,59 @@ cd CinemaApp
 npm install
 ```
 
-### 2. Configurar IP do backend
+### 2. Subir o backend
 
-Edite `src/api/index.ts` e troque o IP:
+O app precisa do backend rodando na porta `3000`. O passo a passo está no [README da raiz](../README.md#backend). Em resumo:
 
-```ts
-// Para emulador Android: 10.0.2.2
-// Para dispositivo físico: IP da sua máquina na rede local
-export const BASE_URL = 'http://192.168.1.100:3000';
+```bash
+cd ../cinema-nestjs-swagger-main
+cp .env.example .env
+npm install
+npx prisma migrate dev
+npm run seed          # cria dados de teste e o usuário admin@cinema.com / senha123
+npm run start:dev
 ```
 
-Para descobrir seu IP:
-- **macOS/Linux**: `ifconfig | grep inet`
-- **Windows**: `ipconfig`
+O backend escuta em `0.0.0.0:3000` e tem CORS liberado, então aceita conexões do celular na rede local.
 
 ### 3. Rodar o app
 
 ```bash
-# Expo Go (mais simples)
-npx expo start
-
-# Android
-npx expo start --android
-
-# iOS
-npx expo start --ios
+npx expo start --lan
 ```
 
----
+Abra o app no celular com o **Expo Go** (versão atual da loja, que suporta o SDK 58):
+- **Android:** escaneie o QR Code pelo Expo Go.
+- **iPhone:** escaneie o QR Code pela câmera.
 
-## ⚙️ Setup do Backend (NestJS)
+Também dá para digitar o endereço direto no Expo Go, em *Enter URL manually*: `exp://<IP do PC>:8081`.
 
-### 1. Instalar novas dependências
+O celular e o PC precisam estar **na mesma rede Wi-Fi**. Se o celular não conectar, verifique se o Firewall do Windows permite o **Node.js** em redes privadas.
+
+### Endereço do backend (automático)
+
+Não é preciso editar o IP do backend no código. O `src/api/index.ts` descobre o IP do PC pelo próprio Expo (`Constants.expoConfig.hostUri`) e monta `http://<IP do PC>:3000`. A ordem de prioridade é:
+
+1. A variável de ambiente `EXPO_PUBLIC_API_URL`, se estiver definida.
+2. O IP do PC que está rodando o Expo.
+3. `http://10.0.2.2:3000`, que é o endereço do PC visto de dentro do emulador Android.
+
+Para apontar para outro servidor, como um backend hospedado ou outra máquina, crie um arquivo `.env` em `CinemaApp/`:
 
 ```bash
-cd cinema-nestjs-swagger-main
-npm install @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
-npm install -D @types/passport-jwt @types/bcryptjs
+EXPO_PUBLIC_API_URL=http://192.168.0.10:3000
 ```
 
-### 2. Adicionar model Usuario ao Prisma
+Depois reinicie o Expo com `npx expo start --clear`.
 
-Adicione ao final de `prisma/schema.prisma`:
-
-```prisma
-model Usuario {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  senha     String
-  criadoEm DateTime @default(now())
-}
-```
-
-Adicionar campo `assento` ao model `Ingresso`:
-
-```prisma
-model Ingresso {
-  // ... campos existentes ...
-  assento   String   @default("") // ← NOVO
-}
-```
-
-Rodar migration:
+### 4. Verificações
 
 ```bash
-npx prisma migrate dev --name add-usuario-assento
-npx prisma generate
+npx tsc --noEmit        # checagem de tipos (deve terminar sem erros)
+npx expo-doctor         # saúde do projeto e compatibilidade das dependências
 ```
 
-### 3. Copiar arquivos do backend-additions
-
-```bash
-# Copiar módulo de Auth
-cp -r backend-additions/src/auth cinema-nestjs-swagger-main/src/
-
-# Substituir DTOs e services atualizados
-cp backend-additions/src/ingresso/create-ingresso.dto.ts \
-   cinema-nestjs-swagger-main/src/ingresso/dto/create-ingresso.dto.ts
-
-cp backend-additions/src/pedido/create-pedido.dto.ts \
-   cinema-nestjs-swagger-main/src/pedido/dto/create-pedido.dto.ts
-
-cp backend-additions/src/pedido/pedido.service.ts \
-   cinema-nestjs-swagger-main/src/pedido/pedido.service.ts
-```
-
-### 4. Atualizar app.module.ts e main.ts
-
-Adicione `AuthModule` no `AppModule` e habilite CORS no `main.ts`:
-
-```ts
-// main.ts — adicionar antes de app.listen()
-app.enableCors({ origin: '*' });
-await app.listen(3000, '0.0.0.0'); // aceitar conexões externas
-```
-
-### 5. Variável de ambiente JWT
-
-Crie/edite `.env`:
-
-```
-DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="sua-chave-super-secreta-aqui"
-```
-
-### 6. Rodar o backend
-
-```bash
-npm run start:dev
-# API em:     http://localhost:3000
-# Swagger em: http://localhost:3000/api
-```
+Ao adicionar uma biblioteca nativa, prefira `npx expo install <pacote>` a `npm install`. Assim a versão instalada é compatível com o SDK 58.
 
 ---
 
@@ -241,6 +189,7 @@ await syncWithServer(data);
 | `zustand` | State management global |
 | `axios` | HTTP client com interceptors |
 | `expo-linear-gradient` | Gradientes da UI |
+| `react-native-safe-area-context` | Áreas seguras (barra de status, barra de navegação, notch) |
 | `react-native-toast-message` | Notificações |
 | `date-fns` | Formatação de datas em pt-BR |
 
@@ -254,6 +203,22 @@ O app usa um tema escuro cinematográfico definido em `src/utils/theme.ts`:
 - **Primary**: `#E50914` (vermelho cinema)
 - **Accent**: `#FFD700` (dourado para preços)
 - **Cards**: `#12121A` com bordas `#2A2A3E`
+
+### Áreas seguras (edge-to-edge)
+
+Nas versões recentes do Expo (incluindo o SDK 58), o Android desenha o app **por trás da barra de status e da barra de navegação** (modo edge-to-edge). Por isso as telas não usam espaçamentos fixos no topo ou na base, e sim o `SafeAreaView` de `react-native-safe-area-context`, que soma o tamanho real dessas barras ao padding de cada elemento:
+
+| Tipo de tela | Como foi aplicado |
+|---|---|
+| Abas (Filmes, Sessões, Ingressos, Perfil) | `<SafeAreaView edges={['top']}>` na raiz. A barra de abas cuida da parte de baixo. |
+| Barra de abas (`app/(tabs)/_layout.tsx`) | `height` e `paddingBottom` somam `useSafeAreaInsets().bottom`. |
+| Checkout com rodapé fixo (Assentos, Lanches, Pagamento) | `edges={['top']}` na raiz, e o próprio rodapé é um `<SafeAreaView edges={['bottom']}>`, para o fundo dele se estender sob a barra de navegação. |
+| Checkout sem rodapé fixo (Escolha de sessão, Comprovante) | `edges={['top', 'bottom']}` na raiz. |
+| Login, Cadastro, Recuperar senha | `SafeAreaView` **dentro** do `LinearGradient`, para o gradiente ocupar a tela inteira. |
+
+**Ao criar uma tela nova,** importe o `SafeAreaView` de `react-native-safe-area-context` (não o de `react-native`) e escolha as bordas (`edges`) conforme a tabela acima. Não use `paddingTop` fixo para desviar da barra de status.
+
+> O `StatusBar` do `expo-status-bar` não aceita mais `backgroundColor`: no modo edge-to-edge, a barra de status é transparente e mostra o fundo da própria tela.
 
 ---
 
