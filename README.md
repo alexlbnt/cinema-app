@@ -41,7 +41,7 @@ cd CinemaApp
 npm install
 npx expo start
 ```
-Escaneie o QR Code com o app **Expo Go**.
+Escaneie o QR Code com o app **Expo Go** (versão atual da loja; o projeto usa o **Expo SDK 58**). O celular precisa estar na mesma rede Wi-Fi do PC.
 
 ## 🔐 Conta de Teste
 

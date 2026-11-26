@@ -31,7 +31,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <AuthGuard>
-      <StatusBar style="light" backgroundColor="#0A0A0F" />
+      <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />

@@ -126,7 +126,7 @@ export default function IngressosScreen() {
         ListHeaderComponent={
           ativos.length > 0 ? (
             <Text style={styles.sectionTitle}>🎟️ Ativos ({ativos.length})</Text>
-          ) : null
+          ) : undefined
         }
         renderItem={({ item, index }) => {
           const showHistorico =

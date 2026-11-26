@@ -81,7 +81,7 @@ export default function SnacksScreen() {
                   {snacks.length} item(s) adicionado(s)
                 </Text>
               </View>
-            ) : null
+            ) : undefined
           }
           ListEmptyComponent={
             <View style={styles.center}>
