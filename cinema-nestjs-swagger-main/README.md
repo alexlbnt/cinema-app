@@ -31,8 +31,9 @@ npm run start:dev        # sobe em modo watch
 
 | Endereço | O quê |
 |---|---|
-| http://localhost:3000 | API |
+| http://localhost:3000 | Frontend web (build em `public/`) |
 | http://localhost:3000/api | Swagger (documentação interativa) |
+| http://localhost:3000/filme, `/sessao`, ... | Rotas da API |
 
 O servidor escuta em `0.0.0.0:3000` com CORS liberado (`origin: '*'`), então aceita conexões do celular e de outras máquinas da rede local.
 
@@ -54,7 +55,8 @@ O `.env` e o banco (`*.db`) ficam fora do git.
 | `npm run build` / `npm run start:prod` | Compila para `dist/` e roda a versão compilada |
 | `npm run seed` | Popula o banco com dados de teste. Rodar de novo **duplica** filmes, sessões e snacks; salas e usuário não se repetem. |
 | `npm run lint` / `npm run format` | ESLint e Prettier |
-| `npm test` / `npm run test:e2e` | Testes unitários e e2e (veja *Problemas conhecidos*, no fim deste arquivo) |
+| `npm test` | Testes unitários (`src/**/*.spec.ts`) |
+| `npm run test:e2e` | Testes e2e (`test/`). Usam o banco do `.env`, então rode as migrations e o seed antes. |
 | `npx prisma studio` | Abre o banco no navegador para ver e editar os dados |
 
 ---
@@ -202,14 +204,23 @@ O `npm run seed` cria:
 
 ## 🖥️ Frontend web
 
-O frontend em React + Vite fica em `frontend/`:
+O frontend em React + Vite fica em `frontend/` e pode ser usado de duas formas:
+
+| Forma | Endereço | Quando usar |
+|---|---|---|
+| Servido pelo backend | http://localhost:3000 | Para usar ou apresentar. O backend entrega o build que está em `public/` (via `ServeStaticModule`). |
+| Servidor do Vite | http://localhost:5173 | Para desenvolver o frontend, com recarregamento automático ao salvar. |
 
 ```bash
 cd frontend
 npm install
-npm run dev      # http://localhost:5173 (chama a API em http://localhost:3000)
-npm run build    # gera o build em ../public
+npm run dev      # servidor do Vite em http://localhost:5173 (chama a API em http://localhost:3000)
+npm run build    # gera o build em ../public, que o backend passa a servir
 ```
+
+**Depois de alterar o frontend,** rode `npm run build` para atualizar a versão servida em http://localhost:3000. Caso contrário, ela continua mostrando o build anterior.
+
+O `ServeStaticModule` só responde a requisições `GET` que nenhuma rota da API atende. Por isso as rotas da API têm prioridade, e qualquer outro caminho devolve o `index.html` do frontend. O `/api` (Swagger) fica excluído.
 
 ---
 
@@ -219,10 +230,8 @@ Pontos identificados no código que ainda precisam de correção:
 
 | Problema | Detalhe |
 |---|---|
-| **Frontend não é servido pelo backend** | O `@nestjs/serve-static` está instalado, e o build do frontend vai para `public/`, mas o `ServeStaticModule` não está registrado no `AppModule`. Por isso `GET http://localhost:3000/` retorna 404. Por enquanto, use o frontend pelo `npm run dev` (porta 5173). |
 | **Não existe perfil de administrador** | Qualquer usuário logado pode criar, editar e apagar filmes, salas, sessões e snacks. |
 | **Compra sem autenticação** | `POST /ingresso` e `POST /pedido` são públicas, e o `usuarioId` é enviado pelo próprio cliente, em vez de vir do token. |
 | **Listagens sem filtro por usuário** | `GET /ingresso` e `GET /pedido` retornam os registros de **todos** os usuários. |
 | **`POST /pedido` sem validação** | O corpo é recebido como `any`, sem DTO, então o `ValidationPipe` não valida nada. |
 | **Recuperação de senha incompleta** | `POST /auth/forgot-password` só gera um token de redefinição e o imprime no console do servidor. Não há envio de e-mail nem rota para redefinir a senha. |
-| **Teste unitário desatualizado** | `src/app.controller.spec.ts` testa `getHello()`, que foi removido do `AppController`. Por isso o `npm test` falha. |

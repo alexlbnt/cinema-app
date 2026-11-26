@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
 import { FilmeModule } from './filme/filme.module';
 import { SalaModule } from './sala/sala.module';
@@ -12,8 +13,21 @@ import { SnackModule } from './snack/snack.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
+// Pasta com o build do frontend web (gerado por `npm run build` em frontend/).
+// Em desenvolvimento este arquivo roda de src/; compilado, roda de dist/src/.
+const frontendPath =
+  [join(__dirname, '..', 'public'), join(__dirname, '..', '..', 'public')].find(
+    (p) => existsSync(join(p, 'index.html')),
+  ) ?? join(__dirname, '..', 'public');
+
 @Module({
   imports: [
+    // Serve o frontend em http://localhost:3000/. Só responde aos GETs que
+    // nenhum controller atende, então as rotas da API têm prioridade.
+    ServeStaticModule.forRoot({
+      rootPath: frontendPath,
+      exclude: ['/api{/*path}'], // Swagger
+    }),
     PrismaModule,
     FilmeModule,
     SalaModule,
@@ -23,9 +37,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     SnackModule,
     AuthModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     // Guard global — protege TODAS as rotas automaticamente
     // Rotas públicas usam @Public() para abrir exceção
     {

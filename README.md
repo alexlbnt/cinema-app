@@ -35,6 +35,8 @@ npm run dev
 ```
 Acesso: `http://localhost:5173`
 
+O backend também serve o último build do frontend em `http://localhost:3000`. Para atualizar essa versão, rode `npm run build` dentro de `frontend/`.
+
 ### App Mobile
 ```bash
 cd CinemaApp
