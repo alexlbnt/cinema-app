@@ -1,6 +1,7 @@
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -84,7 +85,7 @@ export default function AssentosScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
@@ -188,7 +189,7 @@ export default function AssentosScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <SafeAreaView style={styles.footer} edges={['bottom']}>
         <View>
           <Text style={styles.footerSub}>{seats.length} assento(s) selecionado(s)</Text>
           <Text style={styles.footerTotal}>{formatCurrency(totalSeats)}</Text>
@@ -211,15 +212,15 @@ export default function AssentosScreen() {
             <Ionicons name="arrow-forward" size={18} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>
-      </View>
-    </View>
+      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   backBtn: { marginBottom: Spacing.sm },
   title: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.textPrimary },
   sub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 4 },
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   legendText: { fontSize: 11, color: Colors.textMuted },
   footer: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.md, paddingBottom: 30,
+    padding: Spacing.md,
     backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border,
   },
   footerSub: { fontSize: FontSize.xs, color: Colors.textMuted },

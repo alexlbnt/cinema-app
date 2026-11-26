@@ -2,6 +2,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -35,78 +36,80 @@ export default function ForgotPasswordScreen() {
 
   return (
     <LinearGradient colors={['#0A0A0F', '#12121A', '#0A0A0F']} style={styles.container}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <View style={styles.inner}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
-          </TouchableOpacity>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <View style={styles.inner}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
+            </TouchableOpacity>
 
-          {!sent ? (
-            <View style={styles.card}>
-              <View style={styles.iconArea}>
-                <Ionicons name="key-outline" size={36} color={Colors.accent} />
-              </View>
-              <Text style={styles.title}>Recuperar Senha</Text>
-              <Text style={styles.desc}>
-                Informe seu e-mail e enviaremos um link para redefinir sua senha.
-              </Text>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>E-mail</Text>
-                <View style={styles.inputWrapper}>
-                  <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="seu@email.com"
-                    placeholderTextColor={Colors.textMuted}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
+            {!sent ? (
+              <View style={styles.card}>
+                <View style={styles.iconArea}>
+                  <Ionicons name="key-outline" size={36} color={Colors.accent} />
                 </View>
-              </View>
+                <Text style={styles.title}>Recuperar Senha</Text>
+                <Text style={styles.desc}>
+                  Informe seu e-mail e enviaremos um link para redefinir sua senha.
+                </Text>
 
-              <TouchableOpacity
-                style={[styles.btn, isLoading && { opacity: 0.7 }]}
-                onPress={handleSend}
-                disabled={isLoading}
-              >
-                <LinearGradient
-                  colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
-                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                  style={styles.btnGrad}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>E-mail</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="seu@email.com"
+                      placeholderTextColor={Colors.textMuted}
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.btn, isLoading && { opacity: 0.7 }]}
+                  onPress={handleSend}
+                  disabled={isLoading}
                 >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.btnText}>Enviar Link</Text>
-                  )}
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.card}>
-              <View style={[styles.iconArea, { backgroundColor: Colors.success + '20', borderColor: Colors.success + '40' }]}>
-                <Ionicons name="checkmark-circle" size={48} color={Colors.success} />
+                  <LinearGradient
+                    colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                    style={styles.btnGrad}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.btnText}>Enviar Link</Text>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
-              <Text style={styles.title}>E-mail Enviado!</Text>
-              <Text style={styles.desc}>
-                Verifique sua caixa de entrada e siga as instruções para redefinir a senha.
-              </Text>
-              <TouchableOpacity style={styles.btn} onPress={() => router.replace('/(auth)/login')}>
-                <LinearGradient
-                  colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
-                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                  style={styles.btnGrad}
-                >
-                  <Text style={styles.btnText}>Voltar ao Login</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+            ) : (
+              <View style={styles.card}>
+                <View style={[styles.iconArea, { backgroundColor: Colors.success + '20', borderColor: Colors.success + '40' }]}>
+                  <Ionicons name="checkmark-circle" size={48} color={Colors.success} />
+                </View>
+                <Text style={styles.title}>E-mail Enviado!</Text>
+                <Text style={styles.desc}>
+                  Verifique sua caixa de entrada e siga as instruções para redefinir a senha.
+                </Text>
+                <TouchableOpacity style={styles.btn} onPress={() => router.replace('/(auth)/login')}>
+                  <LinearGradient
+                    colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                    style={styles.btnGrad}
+                  >
+                    <Text style={styles.btnText}>Voltar ao Login</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -114,7 +117,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   inner: { flex: 1, padding: Spacing.lg, paddingTop: 60, justifyContent: 'center' },
-  backBtn: { position: 'absolute', top: 60, left: Spacing.lg },
+  backBtn: { position: 'absolute', top: Spacing.md, left: Spacing.lg },
   card: {
     backgroundColor: Colors.bgCard, borderRadius: Radius.xl,
     padding: Spacing.xl, borderWidth: 1, borderColor: Colors.border,

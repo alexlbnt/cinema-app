@@ -1,6 +1,7 @@
 import {
   View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -37,7 +38,7 @@ export default function SnacksScreen() {
   const isSelected = (id: number) => snacks.some((s) => s.id === id);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
@@ -117,7 +118,7 @@ export default function SnacksScreen() {
       )}
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <SafeAreaView style={styles.footer} edges={['bottom']}>
         <View>
           <Text style={styles.footerSub}>Total com lanches</Text>
           <Text style={styles.footerTotal}>{formatCurrency(getTotalValue())}</Text>
@@ -138,14 +139,14 @@ export default function SnacksScreen() {
             <Ionicons name="arrow-forward" size={18} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>
-      </View>
-    </View>
+      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   backBtn: { marginBottom: Spacing.sm },
   title: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.textPrimary },
   sub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 4 },
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
   addBtnTextSelected: { color: '#fff' },
   footer: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.md, paddingBottom: 30,
+    padding: Spacing.md,
     backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border,
   },
   footerSub: { fontSize: FontSize.xs, color: Colors.textMuted },

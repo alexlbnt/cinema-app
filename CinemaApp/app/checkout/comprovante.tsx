@@ -1,6 +1,7 @@
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView, Share, Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,7 +123,7 @@ export default function ComprovanteScreen() {
   const isNew = ticket.status === 'ativo';
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header com sucesso */}
       <LinearGradient
         colors={isNew ? [Colors.primary, Colors.primaryDark] : ['#1A1A2E', '#12121A']}
@@ -233,14 +234,14 @@ export default function ComprovanteScreen() {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
-  header: { paddingTop: 60, paddingBottom: Spacing.xl, alignItems: 'center' },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.xl, alignItems: 'center' },
   successIcon: {
     width: 88, height: 88, borderRadius: 44,
     backgroundColor: 'rgba(255,255,255,0.15)',

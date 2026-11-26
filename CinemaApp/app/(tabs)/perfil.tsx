@@ -1,6 +1,7 @@
 import {
   View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -41,73 +42,75 @@ export default function PerfilScreen() {
     : 'U';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
-        <View style={styles.avatarArea}>
-          <LinearGradient colors={[Colors.primaryLight, Colors.primary]} style={styles.avatar}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </LinearGradient>
-          <View>
-            <Text style={styles.userName}>{user?.nome || 'Usuário'}</Text>
-            <Text style={styles.userEmail}>{user?.email}</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Header */}
+        <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
+          <View style={styles.avatarArea}>
+            <LinearGradient colors={[Colors.primaryLight, Colors.primary]} style={styles.avatar}>
+              <Text style={styles.avatarText}>{initials}</Text>
+            </LinearGradient>
+            <View>
+              <Text style={styles.userName}>{user?.nome || 'Usuário'}</Text>
+              <Text style={styles.userEmail}>{user?.email}</Text>
+            </View>
+          </View>
+        </LinearGradient>
+
+        {/* Stats */}
+        <View style={styles.statsRow}>
+          {[
+            { label: 'Total Ingressos', value: String(tickets.length), icon: 'ticket' },
+            { label: 'Ativos', value: String(ativos), icon: 'checkmark-circle', color: Colors.success },
+            { label: 'Total Gasto', value: formatCurrency(totalGasto), icon: 'cash', color: Colors.accentGold },
+          ].map(({ label, value, icon, color }) => (
+            <View key={label} style={styles.statCard}>
+              <Ionicons name={icon as any} size={24} color={color || Colors.primary} />
+              <Text style={[styles.statValue, { color: color || Colors.textPrimary }]}>{value}</Text>
+              <Text style={styles.statLabel}>{label}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Menu */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Conta</Text>
+          <View style={styles.menuCard}>
+            <MenuItem icon="person-outline" label="Dados Pessoais" onPress={() => {}} />
+            <View style={styles.divider} />
+            <MenuItem icon="lock-closed-outline" label="Alterar Senha" onPress={() => router.push('/(auth)/forgot-password')} />
+            <View style={styles.divider} />
+            <MenuItem icon="notifications-outline" label="Notificações" onPress={() => {}} />
           </View>
         </View>
-      </LinearGradient>
 
-      {/* Stats */}
-      <View style={styles.statsRow}>
-        {[
-          { label: 'Total Ingressos', value: String(tickets.length), icon: 'ticket' },
-          { label: 'Ativos', value: String(ativos), icon: 'checkmark-circle', color: Colors.success },
-          { label: 'Total Gasto', value: formatCurrency(totalGasto), icon: 'cash', color: Colors.accentGold },
-        ].map(({ label, value, icon, color }) => (
-          <View key={label} style={styles.statCard}>
-            <Ionicons name={icon as any} size={24} color={color || Colors.primary} />
-            <Text style={[styles.statValue, { color: color || Colors.textPrimary }]}>{value}</Text>
-            <Text style={styles.statLabel}>{label}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Suporte</Text>
+          <View style={styles.menuCard}>
+            <MenuItem icon="help-circle-outline" label="Central de Ajuda" onPress={() => {}} />
+            <View style={styles.divider} />
+            <MenuItem icon="document-text-outline" label="Termos de Uso" onPress={() => {}} />
+            <View style={styles.divider} />
+            <MenuItem icon="shield-checkmark-outline" label="Privacidade" onPress={() => {}} />
           </View>
-        ))}
-      </View>
-
-      {/* Menu */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Conta</Text>
-        <View style={styles.menuCard}>
-          <MenuItem icon="person-outline" label="Dados Pessoais" onPress={() => {}} />
-          <View style={styles.divider} />
-          <MenuItem icon="lock-closed-outline" label="Alterar Senha" onPress={() => router.push('/(auth)/forgot-password')} />
-          <View style={styles.divider} />
-          <MenuItem icon="notifications-outline" label="Notificações" onPress={() => {}} />
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Suporte</Text>
-        <View style={styles.menuCard}>
-          <MenuItem icon="help-circle-outline" label="Central de Ajuda" onPress={() => {}} />
-          <View style={styles.divider} />
-          <MenuItem icon="document-text-outline" label="Termos de Uso" onPress={() => {}} />
-          <View style={styles.divider} />
-          <MenuItem icon="shield-checkmark-outline" label="Privacidade" onPress={() => {}} />
+        <View style={styles.section}>
+          <View style={styles.menuCard}>
+            <MenuItem icon="log-out-outline" label="Sair da Conta" onPress={handleLogout} danger />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.section}>
-        <View style={styles.menuCard}>
-          <MenuItem icon="log-out-outline" label="Sair da Conta" onPress={handleLogout} danger />
-        </View>
-      </View>
-
-      <Text style={styles.version}>CinemaApp v1.0.0</Text>
-    </ScrollView>
+        <Text style={styles.version}>CinemaApp v1.0.0</Text>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   content: { paddingBottom: 40 },
-  header: { paddingTop: 60, paddingBottom: Spacing.xl, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.xl, paddingHorizontal: Spacing.lg },
   avatarArea: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   avatar: {
     width: 64, height: 64, borderRadius: 32,

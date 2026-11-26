@@ -2,6 +2,7 @@ import {
   View, Text, FlatList, StyleSheet, TouchableOpacity,
   ActivityIndicator, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -101,7 +102,7 @@ export default function SessoesScreen() {
   useEffect(() => { load(); }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <Text style={styles.headerTitle}>Sessões</Text>
         <Text style={styles.headerSub}>Hoje e próximos dias</Text>
@@ -137,13 +138,13 @@ export default function SessoesScreen() {
           )}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   headerTitle: { fontSize: FontSize.xxl, fontWeight: '900', color: Colors.textPrimary, letterSpacing: 1 },
   headerSub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
   list: { padding: Spacing.md, gap: Spacing.md },

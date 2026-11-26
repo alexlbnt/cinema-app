@@ -1,6 +1,7 @@
 import {
   View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -95,7 +96,7 @@ export default function IngressosScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <Text style={styles.headerTitle}>Meus Ingressos</Text>
         <Text style={styles.headerSub}>{tickets.length} ingresso(s) no total</Text>
@@ -149,13 +150,13 @@ export default function IngressosScreen() {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   headerTitle: { fontSize: FontSize.xxl, fontWeight: '900', color: Colors.textPrimary, letterSpacing: 1 },
   headerSub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
   list: { padding: Spacing.md, gap: Spacing.md },

@@ -2,6 +2,7 @@ import {
   View, Text, FlatList, StyleSheet, TouchableOpacity,
   TextInput, ActivityIndicator, RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -97,7 +98,7 @@ export default function FilmesScreen() {
   }, [search, filmes]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <Text style={styles.headerTitle}>Em Cartaz</Text>
@@ -149,14 +150,14 @@ export default function FilmesScreen() {
           )}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   header: {
-    paddingTop: 60, paddingBottom: Spacing.md,
+    paddingTop: Spacing.md, paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   headerTitle: { fontSize: FontSize.xxl, fontWeight: '900', color: Colors.textPrimary, letterSpacing: 1 },

@@ -2,6 +2,7 @@ import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -85,7 +86,7 @@ export default function PagamentoScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
@@ -197,7 +198,7 @@ export default function PagamentoScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <SafeAreaView style={styles.footer} edges={['bottom']}>
         <View>
           <Text style={styles.footerLabel}>Total a pagar</Text>
           <Text style={styles.footerTotal}>{formatCurrency(total)}</Text>
@@ -222,14 +223,14 @@ export default function PagamentoScreen() {
             )}
           </LinearGradient>
         </TouchableOpacity>
-      </View>
-    </View>
+      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   backBtn: { marginBottom: Spacing.sm },
   title: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.textPrimary },
   sub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 4 },
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.primary },
   footer: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.md, paddingBottom: 30,
+    padding: Spacing.md,
     backgroundColor: Colors.bgCard, borderTopWidth: 1, borderTopColor: Colors.border,
   },
   footerLabel: { fontSize: FontSize.xs, color: Colors.textMuted },

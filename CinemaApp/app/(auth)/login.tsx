@@ -2,6 +2,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -34,99 +35,101 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient colors={['#0A0A0F', '#12121A', '#0A0A0F']} style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Logo */}
-          <View style={styles.logoArea}>
-            <View style={styles.logoIcon}>
-              <Ionicons name="film" size={40} color={Colors.primary} />
-            </View>
-            <Text style={styles.logoText}>CINEMA</Text>
-            <Text style={styles.logoSub}>Sua experiência começa aqui</Text>
-          </View>
-
-          {/* Card */}
-          <View style={styles.card}>
-            <Text style={styles.title}>Entrar</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>E-mail</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="seu@email.com"
-                  placeholderTextColor={Colors.textMuted}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+            {/* Logo */}
+            <View style={styles.logoArea}>
+              <View style={styles.logoIcon}>
+                <Ionicons name="film" size={40} color={Colors.primary} />
               </View>
+              <Text style={styles.logoText}>CINEMA</Text>
+              <Text style={styles.logoSub}>Sua experiência começa aqui</Text>
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Senha</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  placeholder="••••••••"
-                  placeholderTextColor={Colors.textMuted}
-                  value={senha}
-                  onChangeText={setSenha}
-                  secureTextEntry={!showSenha}
-                />
-                <TouchableOpacity onPress={() => setShowSenha(!showSenha)} style={styles.eyeBtn}>
-                  <Ionicons
-                    name={showSenha ? 'eye-off-outline' : 'eye-outline'}
-                    size={18}
-                    color={Colors.textMuted}
+            {/* Card */}
+            <View style={styles.card}>
+              <Text style={styles.title}>Entrar</Text>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>E-mail</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="seu@email.com"
+                    placeholderTextColor={Colors.textMuted}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
                   />
-                </TouchableOpacity>
+                </View>
               </View>
-            </View>
 
-            <Link href="/(auth)/forgot-password" asChild>
-              <TouchableOpacity style={styles.forgotBtn}>
-                <Text style={styles.forgotText}>Esqueci minha senha</Text>
-              </TouchableOpacity>
-            </Link>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Senha</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="••••••••"
+                    placeholderTextColor={Colors.textMuted}
+                    value={senha}
+                    onChangeText={setSenha}
+                    secureTextEntry={!showSenha}
+                  />
+                  <TouchableOpacity onPress={() => setShowSenha(!showSenha)} style={styles.eyeBtn}>
+                    <Ionicons
+                      name={showSenha ? 'eye-off-outline' : 'eye-outline'}
+                      size={18}
+                      color={Colors.textMuted}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-            <TouchableOpacity
-              style={[styles.loginBtn, isLoading && { opacity: 0.7 }]}
-              onPress={handleLogin}
-              disabled={isLoading}
-            >
-              <LinearGradient
-                colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.loginBtnGrad}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.loginBtnText}>Entrar</Text>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <View style={styles.registerRow}>
-              <Text style={styles.registerText}>Não tem uma conta? </Text>
-              <Link href="/(auth)/register" asChild>
-                <TouchableOpacity>
-                  <Text style={styles.registerLink}>Cadastrar</Text>
+              <Link href="/(auth)/forgot-password" asChild>
+                <TouchableOpacity style={styles.forgotBtn}>
+                  <Text style={styles.forgotText}>Esqueci minha senha</Text>
                 </TouchableOpacity>
               </Link>
+
+              <TouchableOpacity
+                style={[styles.loginBtn, isLoading && { opacity: 0.7 }]}
+                onPress={handleLogin}
+                disabled={isLoading}
+              >
+                <LinearGradient
+                  colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.loginBtnGrad}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.loginBtnText}>Entrar</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <View style={styles.registerRow}>
+                <Text style={styles.registerText}>Não tem uma conta? </Text>
+                <Link href="/(auth)/register" asChild>
+                  <TouchableOpacity>
+                    <Text style={styles.registerLink}>Cadastrar</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }

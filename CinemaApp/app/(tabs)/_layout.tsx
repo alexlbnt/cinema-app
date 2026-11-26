@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/utils/theme';
 import { View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTicketsStore } from '../../src/store/ticketsStore';
 
 function TabBarIcon({ name, focused, badge }: { name: any; focused: boolean; badge?: number }) {
@@ -29,6 +30,8 @@ function TabBarIcon({ name, focused, badge }: { name: any; focused: boolean; bad
 export default function TabsLayout() {
   const { tickets } = useTicketsStore();
   const ativos = tickets.filter((t) => t.status === 'ativo').length;
+  // Espaço da barra de navegação do Android / indicador do iPhone (edge-to-edge)
+  const { bottom } = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -38,8 +41,8 @@ export default function TabsLayout() {
           backgroundColor: Colors.bgCard,
           borderTopColor: Colors.border,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + bottom,
+          paddingBottom: 8 + bottom,
         },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,

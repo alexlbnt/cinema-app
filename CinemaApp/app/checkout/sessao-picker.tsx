@@ -1,6 +1,7 @@
 import {
   View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ export default function SessaoPickerScreen() {
   }, [filmeId]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <LinearGradient colors={['#0A0A0F', '#12121A']} style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
@@ -118,13 +119,13 @@ export default function SessaoPickerScreen() {
           }}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingTop: 60, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
+  header: { paddingTop: Spacing.md, paddingBottom: Spacing.md, paddingHorizontal: Spacing.lg },
   backBtn: { marginBottom: Spacing.sm },
   subtitle: { fontSize: FontSize.sm, color: Colors.textMuted },
   title: { fontSize: FontSize.xl, fontWeight: '800', color: Colors.textPrimary, marginTop: 4 },

@@ -2,6 +2,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -43,112 +44,114 @@ export default function RegisterScreen() {
 
   return (
     <LinearGradient colors={['#0A0A0F', '#12121A', '#0A0A0F']} style={styles.container}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
-          </TouchableOpacity>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={Colors.textPrimary} />
+            </TouchableOpacity>
 
-          <View style={styles.header}>
-            <View style={styles.logoIcon}>
-              <Ionicons name="film" size={32} color={Colors.primary} />
+            <View style={styles.header}>
+              <View style={styles.logoIcon}>
+                <Ionicons name="film" size={32} color={Colors.primary} />
+              </View>
+              <Text style={styles.title}>Criar Conta</Text>
+              <Text style={styles.subtitle}>Junte-se a nós e aproveite o cinema</Text>
             </View>
-            <Text style={styles.title}>Criar Conta</Text>
-            <Text style={styles.subtitle}>Junte-se a nós e aproveite o cinema</Text>
-          </View>
 
-          <View style={styles.card}>
-            {[
-              { label: 'Nome Completo', value: nome, setter: setNome, icon: 'person-outline', placeholder: 'Seu nome', type: 'default' },
-              { label: 'E-mail', value: email, setter: setEmail, icon: 'mail-outline', placeholder: 'seu@email.com', type: 'email-address' },
-            ].map(({ label, value, setter, icon, placeholder, type }) => (
-              <View key={label} style={styles.inputGroup}>
-                <Text style={styles.label}>{label}</Text>
+            <View style={styles.card}>
+              {[
+                { label: 'Nome Completo', value: nome, setter: setNome, icon: 'person-outline', placeholder: 'Seu nome', type: 'default' },
+                { label: 'E-mail', value: email, setter: setEmail, icon: 'mail-outline', placeholder: 'seu@email.com', type: 'email-address' },
+              ].map(({ label, value, setter, icon, placeholder, type }) => (
+                <View key={label} style={styles.inputGroup}>
+                  <Text style={styles.label}>{label}</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name={icon as any} size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder={placeholder}
+                      placeholderTextColor={Colors.textMuted}
+                      value={value}
+                      onChangeText={setter}
+                      keyboardType={type as any}
+                      autoCapitalize={type === 'email-address' ? 'none' : 'words'}
+                      autoCorrect={false}
+                    />
+                  </View>
+                </View>
+              ))}
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Senha</Text>
                 <View style={styles.inputWrapper}>
-                  <Ionicons name={icon as any} size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                  <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="Mínimo 6 caracteres"
+                    placeholderTextColor={Colors.textMuted}
+                    value={senha}
+                    onChangeText={setSenha}
+                    secureTextEntry={!showSenha}
+                  />
+                  <TouchableOpacity onPress={() => setShowSenha(!showSenha)} style={styles.eyeBtn}>
+                    <Ionicons name={showSenha ? 'eye-off-outline' : 'eye-outline'} size={18} color={Colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Confirmar Senha</Text>
+                <View style={[styles.inputWrapper, confirmar && senha !== confirmar && { borderColor: Colors.error }]}>
+                  <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
-                    placeholder={placeholder}
+                    placeholder="Repita a senha"
                     placeholderTextColor={Colors.textMuted}
-                    value={value}
-                    onChangeText={setter}
-                    keyboardType={type as any}
-                    autoCapitalize={type === 'email-address' ? 'none' : 'words'}
-                    autoCorrect={false}
+                    value={confirmar}
+                    onChangeText={setConfirmar}
+                    secureTextEntry={!showSenha}
                   />
                 </View>
               </View>
-            ))}
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Senha</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  placeholder="Mínimo 6 caracteres"
-                  placeholderTextColor={Colors.textMuted}
-                  value={senha}
-                  onChangeText={setSenha}
-                  secureTextEntry={!showSenha}
-                />
-                <TouchableOpacity onPress={() => setShowSenha(!showSenha)} style={styles.eyeBtn}>
-                  <Ionicons name={showSenha ? 'eye-off-outline' : 'eye-outline'} size={18} color={Colors.textMuted} />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirmar Senha</Text>
-              <View style={[styles.inputWrapper, confirmar && senha !== confirmar && { borderColor: Colors.error }]}>
-                <Ionicons name="lock-closed-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Repita a senha"
-                  placeholderTextColor={Colors.textMuted}
-                  value={confirmar}
-                  onChangeText={setConfirmar}
-                  secureTextEntry={!showSenha}
-                />
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.btn, isLoading && { opacity: 0.7 }]}
-              onPress={handleRegister}
-              disabled={isLoading}
-            >
-              <LinearGradient
-                colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
-                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                style={styles.btnGrad}
+              <TouchableOpacity
+                style={[styles.btn, isLoading && { opacity: 0.7 }]}
+                onPress={handleRegister}
+                disabled={isLoading}
               >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.btnText}>Criar Conta</Text>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={[Colors.primaryLight, Colors.primary, Colors.primaryDark]}
+                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                  style={styles.btnGrad}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.btnText}>Criar Conta</Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
 
-            <View style={styles.loginRow}>
-              <Text style={styles.loginText}>Já tem conta? </Text>
-              <Link href="/(auth)/login" asChild>
-                <TouchableOpacity>
-                  <Text style={styles.loginLink}>Entrar</Text>
-                </TouchableOpacity>
-              </Link>
+              <View style={styles.loginRow}>
+                <Text style={styles.loginText}>Já tem conta? </Text>
+                <Link href="/(auth)/login" asChild>
+                  <TouchableOpacity>
+                    <Text style={styles.loginLink}>Entrar</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scroll: { flexGrow: 1, padding: Spacing.lg, paddingTop: 60 },
+  scroll: { flexGrow: 1, padding: Spacing.lg, paddingTop: Spacing.md },
   backBtn: { marginBottom: Spacing.lg },
   header: { alignItems: 'center', marginBottom: Spacing.xl },
   logoIcon: {
