@@ -76,6 +76,7 @@ export const ingressosApi = {
     tipo: 'Inteira' | 'Meia';
     valorPago: number;
     assento: string;
+    usuarioId?: number;
   }) => api.post('/ingresso', data),
 };
 
